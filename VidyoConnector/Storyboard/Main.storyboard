@@ -278,7 +278,6 @@
                         <outlet property="cameraButton" destination="HTA-bP-z33" id="ecO-dU-pGY"/>
                         <outlet property="libVersion" destination="9Pi-Pz-6hc" id="fwn-oM-wWP"/>
                         <outlet property="localView" destination="ijl-bt-m1G" id="8p9-MC-BCT"/>
-                        <outlet property="localViewHeight" destination="yGu-4V-9oe" id="f7a-HM-3Lw"/>
                         <outlet property="microphoneButton" destination="MiV-9I-3kH" id="ZlE-Yy-aBi"/>
                         <outlet property="progress" destination="Wvg-CT-KGu" id="Gbq-Ib-irD"/>
                         <outlet property="removeView" destination="ZoM-jA-AsK" id="Euj-Hw-GGo"/>

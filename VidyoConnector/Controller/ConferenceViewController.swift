@@ -21,13 +21,6 @@ class ConferenceViewController: UIViewController {
     @IBOutlet var removeView: UIView!
     @IBOutlet var localView: UIView!
     
-    @IBOutlet weak var locaViewWidth: NSLayoutConstraint!
-    @IBOutlet weak var localViewHeight: NSLayoutConstraint!
-    @IBOutlet weak var locaViewRightOffset: NSLayoutConstraint!
-    @IBOutlet weak var localViewBottomOffset: NSLayoutConstraint!
-    @IBOutlet weak var localViewX: NSLayoutConstraint!
-    @IBOutlet weak var localViewY: NSLayoutConstraint!
-    
     public var connectParams: ConnectParams?
     
     private var connector: VCConnector?
@@ -269,7 +262,7 @@ extension ConferenceViewController: VCConnectorIRegisterLocalCameraEventListener
     func onRemoteCameraAdded(_ remoteCamera: VCRemoteCamera!, participant: VCParticipant!) {
         self.participantsMap[participant.getId()] = remoteCamera
         
-        if (participant.getId() == self.loudestParticipantId) {
+        if (self.loudestParticipantId == nil || participant.getId() == self.loudestParticipantId) {
             self.hideView(view: &removeView)
             self.assignRemoteCamera(remoteCamera: remoteCamera, view: &removeView)
             self.refreshView(view: &removeView)
@@ -277,10 +270,13 @@ extension ConferenceViewController: VCConnectorIRegisterLocalCameraEventListener
     }
     
     func onRemoteCameraRemoved(_ remoteCamera: VCRemoteCamera!, participant: VCParticipant!) {
-        self.participantsMap[participant.getId()] = nil
+        self.participantsMap.removeValue(forKey: participant.getId())
 
         if (participant.getId() == self.loudestParticipantId) {
             self.hideView(view: &removeView)
+            self.loudestParticipantId = nil
+            
+            self.takeDefaultCameraBeforeLoudestDetected()
         }
     }
     
@@ -428,6 +424,20 @@ extension ConferenceViewController {
             [weak self] in
             guard let this = self else { return }
             this.connector?.hideView(&view)
+        }
+    }
+    
+    private func takeDefaultCameraBeforeLoudestDetected() {
+        DispatchQueue.main.async {
+            [weak self] in
+            guard let this = self else { return }
+            
+            for (participantId, remoteCamera) in this.participantsMap {
+                this.assignRemoteCamera(remoteCamera: remoteCamera, view: &this.removeView)
+                this.refreshView(view: &this.removeView)
+                print("Participant with id \(participantId) was taken as default before loudest detected")
+                break
+            }
         }
     }
     
